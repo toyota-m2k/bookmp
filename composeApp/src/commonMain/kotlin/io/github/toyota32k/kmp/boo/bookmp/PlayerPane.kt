@@ -7,8 +7,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import io.github.kdroidfilter.composemediaplayer.VideoPlayerSurface
+import io.github.kdroidfilter.composemediaplayer.rememberVideoPlayerState
 
 @Composable
 fun PlayerPane(modifier: Modifier) {
-    Box( modifier = modifier.background(Color.Green))
+    val videoPlayerState = rememberVideoPlayerState()
+
+    Box(modifier = modifier.background(Color.Black)) {
+        VideoPlayerSurface(
+            modifier = Modifier.fillMaxSize(),
+            playerState = videoPlayerState,
+        )
+    }
 }
