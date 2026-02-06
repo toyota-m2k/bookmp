@@ -5,6 +5,7 @@ import androidx.compose.ui.window.application
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 
+// IntelliJ Debug Console の文字化け対策
 object ConsoleEncodingFix {
     @JvmStatic
     fun apply() {
@@ -18,7 +19,9 @@ object ConsoleEncodingFix {
     }
 }
 fun main() = application {
+    // 文字コードを設定
     ConsoleEncodingFix.apply()
+
     // Initialize Napier for JVM to log to standard output
     Napier.base(DebugAntilog())
     Window(
