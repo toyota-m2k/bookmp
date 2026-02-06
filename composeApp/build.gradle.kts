@@ -58,7 +58,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.adaptive)
             // Napier for multiplatform logging
-            implementation("io.github.aakira:napier:2.7.1")
+            api(libs.napier)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
