@@ -20,9 +20,11 @@ android {
     
     sourceSets {
         getByName("main") {
-            java.srcDirs("src/main/kotlin", "src/androidMain/kotlin")
-            res.srcDirs("src/main/res", "src/androidMain/res")
+            // src/androidMain をプライマリなソースセットとして使用
             manifest.srcFile("src/androidMain/AndroidManifest.xml")
+            kotlin.srcDirs("src/androidMain/kotlin")
+            res.srcDirs("src/androidMain/res")
+            assets.srcDirs("src/androidMain/assets")
         }
     }
 

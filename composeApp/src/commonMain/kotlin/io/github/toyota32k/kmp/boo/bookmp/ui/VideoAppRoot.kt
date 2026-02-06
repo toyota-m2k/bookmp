@@ -1,5 +1,6 @@
-package io.github.toyota32k.kmp.boo.bookmp
+package io.github.toyota32k.kmp.boo.bookmp.ui
 
+import VideoItem
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
@@ -46,6 +47,7 @@ fun VideoAppRoot() {
     // ドロワーの状態管理（OpenかClosedか）
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    var selectedVideo by remember { mutableStateOf<VideoItem?>(null) }
 
     LaunchedEffect(isWideScreen) {
         if (isWideScreen && drawerState.isOpen) {
@@ -60,7 +62,9 @@ fun VideoAppRoot() {
         drawerContent = {
             // ここに VideoListPane を置く
             ModalDrawerSheet {
-                VideoListPane(modifier = Modifier.fillMaxHeight().fillMaxWidth())
+                VideoListPane(modifier = Modifier.fillMaxSize()) { videoItem ->
+                    selectedVideo = videoItem
+                }
             }
         }
     ) {
@@ -95,13 +99,21 @@ fun VideoAppRoot() {
                             enter = expandHorizontally() + fadeIn(), // 横に広がりながらフェードイン
                             exit = shrinkHorizontally() + fadeOut()  // 横に縮みながらフェードアウト
                         ) {
-                            VideoListPane(modifier = Modifier.width(300.dp).fillMaxHeight())
+                            VideoListPane(modifier = Modifier.width(300.dp).fillMaxHeight()) { videoItem ->
+                                selectedVideo = videoItem
+                            }
                         }
-                        PlayerPane(modifier = Modifier.weight(1f).fillMaxHeight())
+                        PlayerPane(modifier = Modifier.weight(1f).fillMaxHeight(), videoItem = selectedVideo, showMenuButton = !isWideScreen,
+                            onMenuClick = {
+                                scope.launch { drawerState.open() }
+                            })
                     }
                 } else {
                     // スマホならプレーヤーのみ（リストはドロワーで出てくる）
-                    PlayerPane(modifier = Modifier.fillMaxSize().fillMaxHeight())
+                    PlayerPane(modifier = Modifier.fillMaxSize(), videoItem = selectedVideo, showMenuButton = !isWideScreen,
+                        onMenuClick = {
+                            scope.launch { drawerState.open() }
+                        })
                 }
             }
         }
