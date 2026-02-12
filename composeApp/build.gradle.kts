@@ -57,8 +57,12 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.adaptive)
+            implementation(libs.okio)
             // Napier for multiplatform logging
             api(libs.napier)
+            implementation("io.github.vinceglb:filekit-core:0.12.0")
+            implementation("io.github.vinceglb:filekit-dialogs:0.12.0")
+            implementation("io.github.vinceglb:filekit-dialogs-compose:0.12.0")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

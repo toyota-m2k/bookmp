@@ -1,5 +1,8 @@
 package io.github.toyota32k.kmp.boo.bookmp
 
+import okio.FileSystem
+
+
 interface Platform {
     val name: String
     val isAndroid: Boolean
@@ -12,6 +15,10 @@ interface Platform {
         get() = name.endsWith("/JS")
     val isWasm: Boolean
         get() = name.endsWith("/Wasm")
+    val isWeb: Boolean
+        get() = isJs || isWasm
 }
 
 expect fun getPlatform(): Platform
+
+expect val platformFileSystem: FileSystem

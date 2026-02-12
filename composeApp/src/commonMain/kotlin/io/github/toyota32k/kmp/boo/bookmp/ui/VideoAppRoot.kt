@@ -1,6 +1,6 @@
 package io.github.toyota32k.kmp.boo.bookmp.ui
 
-import VideoItem
+import IMediaItem
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
@@ -36,6 +36,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
+import io.github.toyota32k.kmp.boo.bookmp.model.IMediaSource
+import io.github.toyota32k.kmp.boo.bookmp.model.LocalMediaSource
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,7 +49,8 @@ fun VideoAppRoot() {
     // ドロワーの状態管理（OpenかClosedか）
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    var selectedVideo by remember { mutableStateOf<VideoItem?>(null) }
+    var selectedVideo by remember { mutableStateOf<IMediaItem?>(null) }
+    val mediaSource by remember { mutableStateOf<IMediaSource>(LocalMediaSource("c:/data/video"))}
 
     LaunchedEffect(isWideScreen) {
         if (isWideScreen && drawerState.isOpen) {
@@ -62,7 +65,7 @@ fun VideoAppRoot() {
         drawerContent = {
             // ここに VideoListPane を置く
             ModalDrawerSheet {
-                VideoListPane(modifier = Modifier.fillMaxSize()) { videoItem ->
+                VideoListPane(mediaSource=mediaSource, selectedVideo = selectedVideo, modifier = Modifier.fillMaxSize()) { videoItem ->
                     selectedVideo = videoItem
                 }
             }
@@ -99,7 +102,7 @@ fun VideoAppRoot() {
                             enter = expandHorizontally() + fadeIn(), // 横に広がりながらフェードイン
                             exit = shrinkHorizontally() + fadeOut()  // 横に縮みながらフェードアウト
                         ) {
-                            VideoListPane(modifier = Modifier.width(300.dp).fillMaxHeight()) { videoItem ->
+                            VideoListPane(mediaSource=mediaSource, selectedVideo = selectedVideo, modifier = Modifier.width(300.dp).fillMaxHeight()) { videoItem ->
                                 selectedVideo = videoItem
                             }
                         }
