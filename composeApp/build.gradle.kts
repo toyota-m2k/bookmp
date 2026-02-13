@@ -60,9 +60,10 @@ kotlin {
             implementation(libs.okio)
             // Napier for multiplatform logging
             api(libs.napier)
-            implementation("io.github.vinceglb:filekit-core:0.12.0")
-            implementation("io.github.vinceglb:filekit-dialogs:0.12.0")
-            implementation("io.github.vinceglb:filekit-dialogs-compose:0.12.0")
+            api("io.github.vinceglb:filekit-core:0.12.0")
+            api("io.github.vinceglb:filekit-dialogs:0.12.0")
+            api("io.github.vinceglb:filekit-dialogs-compose:0.12.0")
+            api(project(":shared")) // この行を追加または確認
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

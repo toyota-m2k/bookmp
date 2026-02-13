@@ -34,3 +34,5 @@ plugins {
 
 include(":composeApp")
 include(":androidApp")
+include(":shared")
+include(":jvm-common-lib")

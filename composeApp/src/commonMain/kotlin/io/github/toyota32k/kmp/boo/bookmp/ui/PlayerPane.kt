@@ -1,6 +1,6 @@
 package io.github.toyota32k.kmp.boo.bookmp.ui
 
-import IMediaItem
+import io.github.toyota32k.kmp.boo.bookmp.model.IMediaItem
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Pause
@@ -31,13 +30,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import io.github.aakira.napier.Napier
 import io.github.kdroidfilter.composemediaplayer.VideoPlayerError
 import io.github.kdroidfilter.composemediaplayer.VideoPlayerState
 import io.github.kdroidfilter.composemediaplayer.VideoPlayerSurface
 import io.github.kdroidfilter.composemediaplayer.rememberVideoPlayerState
-import io.github.toyota32k.kmp.boo.bookmp.getPlatform
-import kotlinx.coroutines.delay
+import io.github.toyota32k.kmp.boo.bookmp.model.load
+import io.github.toyota32k.kmp.util.UtLog
+import io.github.toyota32k.kmp.util.platform
+
+private val logger = UtLog("Player", null, "io.github.toyota32k.kmp.boo.bookmp.ui")
 
 @Composable
 fun PlayerPane(
@@ -54,21 +55,21 @@ fun PlayerPane(
             is VideoPlayerError.NetworkError -> "Network: " + error.message
             is VideoPlayerError.UnknownError -> "Unknown: " + error.message
             is VideoPlayerError.SourceError -> "Source: " + error.message
-            else -> "Unknown error"
         }
-        println("Error detected: $msg")
+        logger.error("Error detected: $msg")
         playerState.clearError()
     }
     // 動画が切り替わったときに新しい URL をセットして再生
     LaunchedEffect(videoItem) {
         videoItem?.let {
-            println("set: ${it.title}")
+            logger.info("set: ${it.title}")
+            playerState.load(it)
 //            playerState.openUri(it.url)
         }
     }
 
     // JVM版で発生する不具合（再生を開始しても描画が更新されない）を回避するためのパッチ
-    val isJvm = getPlatform().isJvm
+    val isJvm = platform().isJvm
     var frameTrigger by remember { mutableStateOf(0) }
     if (isJvm) {
         LaunchedEffect(playerState.isPlaying) {
@@ -170,7 +171,7 @@ fun Player(
                                 playerState.sliderPos = newValue
                             } else {
                                 seekingByUser = newValue
-                                println("seeking: $newValue")
+                                logger.verbose { "seeking: $newValue" }
                             }
                         },
                         onValueChangeFinished = {

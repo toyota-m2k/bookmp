@@ -1,6 +1,6 @@
 package io.github.toyota32k.kmp.boo.bookmp.ui
 
-import IMediaItem
+import io.github.toyota32k.kmp.boo.bookmp.model.IMediaItem
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -20,6 +19,7 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
@@ -34,10 +34,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
+import io.github.toyota32k.kmp.boo.bookmp.model.EmptyMediaSource
 import io.github.toyota32k.kmp.boo.bookmp.model.IMediaSource
-import io.github.toyota32k.kmp.boo.bookmp.model.LocalMediaSource
+import io.github.toyota32k.kmp.boo.bookmp.model.MediaSource
+import io.github.toyota32k.kmp.util.UtLog
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,7 +53,8 @@ fun VideoAppRoot() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var selectedVideo by remember { mutableStateOf<IMediaItem?>(null) }
-    val mediaSource by remember { mutableStateOf<IMediaSource>(LocalMediaSource("c:/data/video"))}
+    var mediaSource by remember { mutableStateOf<IMediaSource>(EmptyMediaSource)}
+    val logger = UtLog("Root", null, "io.github.toyota32k.kmp.boo.bookmp.ui")
 
     LaunchedEffect(isWideScreen) {
         if (isWideScreen && drawerState.isOpen) {
@@ -65,9 +69,17 @@ fun VideoAppRoot() {
         drawerContent = {
             // ここに VideoListPane を置く
             ModalDrawerSheet {
-                VideoListPane(mediaSource=mediaSource, selectedVideo = selectedVideo, modifier = Modifier.fillMaxSize()) { videoItem ->
-                    selectedVideo = videoItem
-                }
+                VideoListPane(mediaSource=mediaSource, selectedVideo = selectedVideo, modifier = Modifier.fillMaxSize(),
+                    onVideoClick = { videoItem ->
+                        selectedVideo = videoItem
+                    },
+                    onAddVideo = {
+                        scope.launch {
+                        }
+                    },
+                    onClearAll = {
+                        mediaSource = EmptyMediaSource
+                    })
             }
         }
     ) {
@@ -102,9 +114,24 @@ fun VideoAppRoot() {
                             enter = expandHorizontally() + fadeIn(), // 横に広がりながらフェードイン
                             exit = shrinkHorizontally() + fadeOut()  // 横に縮みながらフェードアウト
                         ) {
-                            VideoListPane(mediaSource=mediaSource, selectedVideo = selectedVideo, modifier = Modifier.width(300.dp).fillMaxHeight()) { videoItem ->
-                                selectedVideo = videoItem
-                            }
+                            VideoListPane(
+                                mediaSource=mediaSource,
+                                selectedVideo = selectedVideo,
+                                modifier = Modifier.width(300.dp).fillMaxHeight(),
+                                onVideoClick = { videoItem ->
+                                    selectedVideo = videoItem
+                                },
+                                onAddVideo = {
+                                    scope.launch {
+                                        val src = MediaSource.getLocalSource()
+                                        if (src!=null) {
+                                            mediaSource = src
+                                        }
+                                    }
+                                },
+                                onClearAll = {
+                                    mediaSource = EmptyMediaSource
+                                })
                         }
                         PlayerPane(modifier = Modifier.weight(1f).fillMaxHeight(), videoItem = selectedVideo, showMenuButton = !isWideScreen,
                             onMenuClick = {
@@ -120,5 +147,13 @@ fun VideoAppRoot() {
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun VideoAppRootPreview() {
+    MaterialTheme {
+        VideoAppRoot()
     }
 }

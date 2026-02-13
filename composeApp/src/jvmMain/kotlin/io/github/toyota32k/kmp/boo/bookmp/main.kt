@@ -2,10 +2,12 @@ package io.github.toyota32k.kmp.boo.bookmp
 
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import io.github.toyota32k.kmp.boo.bookmp.platform.appInitKoin
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import io.github.vinceglb.filekit.FileKit
-import io.github.vinceglb.filekit.dialogs.openDirectoryPicker
+import org.koin.core.logger.Level
+import org.koin.core.logger.PrintLogger
 
 // IntelliJ Debug Console の文字化け対策
 object ConsoleEncodingFix {
@@ -23,6 +25,9 @@ object ConsoleEncodingFix {
 fun main() = application {
     // 文字コードを設定
     ConsoleEncodingFix.apply()
+    appInitKoin {
+        logger(PrintLogger(Level.INFO))
+    }
     FileKit.init(appId = "BooKmp")
     // Initialize Napier for JVM to log to standard output
     Napier.base(DebugAntilog())
